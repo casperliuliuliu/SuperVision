@@ -4,13 +4,9 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 from Visualization.UI.page1 import Page1
 from Visualization.UI.page2 import Page2
-# from datetime import datetime
-# import tkmacosx
-# from funcs import change_color
+from Filters.image_processing import *
 
 class VideoApp:
-    recording = False
-    filename = None
 
     def __init__(self, root, video_source=0, width=640, height=480):
         self.root = root
@@ -41,13 +37,15 @@ class VideoApp:
         self.func_frame.add(self.tab1_frame, text="Page1")
         self.func_frame.add(self.tab2_frame, text="Page2")
 
+        self.declare_variable()
         self.video_update()
+
+
 
     def video_update(self):
         ret, frame = self.cap.read()
-
         if ret:
-
+            print(self.test_var.get())
             img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             img_left = Image.fromarray(img)
             img_left = ImageTk.PhotoImage(img_left)
@@ -64,24 +62,17 @@ class VideoApp:
             self.canvas_right.config(width=img_right.width(), height=img_right.height())
             self.canvas_right.create_image(0, 0, anchor=tk.NW, image=img_right)
             self.canvas_right.image = img_right  # Save reference to prevent garbage collection
-
-    def start_recording(self):
-        # Define the codec and create VideoWriter object
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
-        self.filename = "output.avi"  # or use datetime to generate unique filenames
-        self.out = cv2.VideoWriter(self.filename, fourcc, 20.0, (640, 480))
-        self.recording = True
-
-    def stop_recording(self):
-        self.recording = False
-        self.out.release()  # Release the VideoWriter object
+    
+    def declare_variable(self):
+        self.test_var = tk.BooleanVar(value=0)
 
     def cool_filter(self, img):
         temp_img = img.copy()
-        
-        # Call the update method after 10 milliseconds
-        self.root.after(10, self.video_update)
+        if self.test_var.get():
+            temp_img = canny_filter(temp_img, self.var_a.get(), self.var_b.get())
 
+
+        self.root.after(10, self.video_update)
         img_right = Image.fromarray(temp_img)
         return img_right
     

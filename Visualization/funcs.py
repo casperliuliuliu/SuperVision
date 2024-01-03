@@ -1,12 +1,12 @@
-def change_color(button, intvar):
+def change_color(button, BooleanVar):
     current_color = button["bg"]
 
     if current_color == "white":
         new_color = "orange"
-        intvar.set(1)
+        BooleanVar.set(True)
 
     else:
         new_color = "white"
-        intvar.set(0)
+        BooleanVar.set(False)
 
     button["bg"] = new_color
