@@ -9,7 +9,6 @@ from Visualization.UI.page2 import Page2
 # from funcs import change_color
 
 class VideoApp:
-    option = 'ori'
     recording = False
     filename = None
 
@@ -48,6 +47,7 @@ class VideoApp:
         ret, frame = self.cap.read()
 
         if ret:
+
             img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             img_left = Image.fromarray(img)
             img_left = ImageTk.PhotoImage(img_left)
@@ -64,6 +64,17 @@ class VideoApp:
             self.canvas_right.config(width=img_right.width(), height=img_right.height())
             self.canvas_right.create_image(0, 0, anchor=tk.NW, image=img_right)
             self.canvas_right.image = img_right  # Save reference to prevent garbage collection
+
+    def start_recording(self):
+        # Define the codec and create VideoWriter object
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        self.filename = "output.avi"  # or use datetime to generate unique filenames
+        self.out = cv2.VideoWriter(self.filename, fourcc, 20.0, (640, 480))
+        self.recording = True
+
+    def stop_recording(self):
+        self.recording = False
+        self.out.release()  # Release the VideoWriter object
 
     def cool_filter(self, img):
         temp_img = img.copy()
