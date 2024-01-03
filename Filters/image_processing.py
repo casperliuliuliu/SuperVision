@@ -23,7 +23,7 @@ def apply_mosaic_filter(rgb_img, block_size=10):
 
     return mosaic_img
 
-def show_image(max_images_per_row,*imgs):
+def show_images(max_images_per_row,*imgs):
     valid_imgs = [cv2.cvtColor(img, cv2.COLOR_RGB2BGR) for img in imgs if img is not None]
     if not valid_imgs:
         raise ValueError("No images provided")
@@ -40,6 +40,14 @@ def show_image(max_images_per_row,*imgs):
 
     while True:
         cv2.imshow('Compare Images', combined_img)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    cv2.destroyAllWindows()
+
+def show_single_image(img):
+
+    while True:
+        cv2.imshow('Image', img)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     cv2.destroyAllWindows()
