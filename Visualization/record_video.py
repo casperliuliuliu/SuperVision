@@ -1,7 +1,9 @@
 import cv2
 from datetime import datetime
+import time
 
 """
+[ Fixed ]
 Seems like the cv2 Video Writer is not working on MacOS, 
 I spend my afternoon trying different fourcc and changing format with filename, but it just not outputing any video.
 Similiar problem link: https://answers.opencv.org/question/236051/videowriter-not-working-on-macos/
@@ -12,7 +14,7 @@ I added the line of code below, and the problem was gone.
 
 """
 
-def record_video(video_source=0, duration=2):
+def record_video(duration=-1, filename=None, video_source=0):
     cap = cv2.VideoCapture(video_source)
     
     if not cap.isOpened():
@@ -27,9 +29,13 @@ def record_video(video_source=0, duration=2):
     cap.set(4, width)
     cap.set(6, fourcc)
 
-    out = cv2.VideoWriter(f'output{datetime.now()}.mov', fourcc, 20.0, (width, height))
+    if filename == None:
+        filename = f"output{datetime.now()}.mov"
 
-    while True:
+    out = cv2.VideoWriter(filename, fourcc, 20.0, (width, height))
+
+    start_time = time.time()
+    while int(time.time() - start_time) < duration:
         ret, frame = cap.read()
         if ret:
             out.write(frame)
@@ -43,5 +49,5 @@ def record_video(video_source=0, duration=2):
     cap.release()
     out.release()
     cv2.destroyAllWindows()
-
-record_video()
+if __name__ == "__main__":
+    record_video(5, "output2.mov")
