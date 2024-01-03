@@ -2,11 +2,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Execute command:
+
+
 ```
-python -m SuperVision.main
+python main.py
 ```
 ```
-python3 -m SuperVision.main
+python3 main.py
 ```
 
 

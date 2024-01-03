@@ -2,10 +2,10 @@ import cv2
 import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
-from .page1 import Page1
-from .page2 import Page2
-from ...Filters.image_processing import *
-from ...Filters.edge_detection import *
+from Visualization.UI.page1 import Page1
+from Visualization.UI.page2 import Page2
+from Filters.image_processing import *
+from Filters.edge_detection import *
 
 class VideoApp:
 
