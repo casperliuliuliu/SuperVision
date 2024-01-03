@@ -1,15 +1,19 @@
 
+    
 import sys
-from ..Filters.edge_detection import *
-from ..Filters.image_processing import *
+parts = sys.path[0].split('/') 
+desired_path = '/'.join(parts[:5])
+sys.path.append(desired_path)
+from my_config import get_config
+
+from edge_detection import *
+from image_processing import *
+
+    
 if __name__ == "__main__":
-    import sys
-    parts = sys.path[0].split('/') 
-    desired_path = '/'.join(parts[:5])
-    sys.path.append(desired_path)
-    from my_config import get_config
     config = get_config()
-    filename = config['Test_image']
+
+    filename = config['Test_image2']
 
     height, width = None, 256
     img = read_image(filename, height, width)
