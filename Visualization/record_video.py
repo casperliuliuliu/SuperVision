@@ -32,7 +32,7 @@ def record_video(duration=-1, filename=None, video_source=0):
     if filename == None:
         filename = f"output{datetime.now()}.mov"
 
-    out = cv2.VideoWriter(filename, fourcc, 20.0, (width, height))
+    out = cv2.VideoWriter(filename, fourcc, 30.0, (width, height))
 
     start_time = time.time()
     while int(time.time() - start_time) < duration:
@@ -50,4 +50,4 @@ def record_video(duration=-1, filename=None, video_source=0):
     out.release()
     cv2.destroyAllWindows()
 if __name__ == "__main__":
-    record_video(5, "output2.mov")
+    record_video(5, "./output5.mov")

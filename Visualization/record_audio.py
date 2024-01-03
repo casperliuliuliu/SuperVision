@@ -12,7 +12,7 @@ def record_audio(duration, filename="output_audio.wav"):
                     channels=channels,
                     rate=sample_rate,
                     input=True,
-                    frames_per_buffer=chunk)
+                    frames_per_buffer=chunk,)
 
     frames = []
 
