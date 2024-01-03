@@ -9,6 +9,16 @@ def apply_grayscale_conversion(rgb_img):
     grayscale_img_rgb = cv2.cvtColor(grayscale_img, cv2.COLOR_GRAY2RGB)
     return grayscale_img_rgb
 
+def apply_in_range(rgb_img, lower_bound=190, upper_bound=255):
+    grayscale_img = cv2.cvtColor(rgb_img, cv2.COLOR_RGB2GRAY)
+    grayscale_img = cv2.inRange(grayscale_img, lower_bound, upper_bound)
+    grayscale_img_rgb = cv2.cvtColor(grayscale_img, cv2.COLOR_GRAY2RGB)
+    return grayscale_img_rgb
+
+def apply_thresholding_rgb(rgb_img):
+    rgb_filtered = cv2.inRange(rgb_img, (190, 190, 190), (255, 255, 255))
+    return rgb_filtered
+
 def apply_single_channel(rgb_img, channel="r"):
     temp_img = rgb_img.copy()
 

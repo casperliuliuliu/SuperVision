@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 def apply_canny_filter(rgb_img, var_a=30, var_b=100):
     canny_edges = cv2.Canny(rgb_img, var_a, var_b)
@@ -14,9 +15,7 @@ def apply_adaptiveThreshold_filter(rgb_img):
 
     return edges_rgb
 
-def apply_emboss_filter(rgb_img, kernel_option=0):
-    gray_img = cv2.cvtColor(rgb_img, cv2.COLOR_RGB2GRAY)
-
+def apply_emboss_filter(rgb_img, kernel_option=0, intensity=1):
     embossing_kernel_array = np.array([
         [
         [0, -1, -1],
@@ -43,8 +42,38 @@ def apply_emboss_filter(rgb_img, kernel_option=0):
         ],
 
         ])
-    embossing_kernel = embossing_kernel_array[kernel_option]
-    embossed_img = cv2.filter2D(gray_img, cv2.CV_8U, embossing_kernel)
+    embossing_kernel = embossing_kernel_array[kernel_option] * intensity
+    embossed_img = cv2.filter2D(rgb_img, cv2.CV_8U, embossing_kernel)
+    return embossed_img
 
-    embossed_img_rgb = cv2.cvtColor(embossed_img, cv2.COLOR_GRAY2BGR)
-    return embossed_img_rgb
+def apply_sharpen_effect(img, kernel_option=0, intensity=1):
+
+    sharpened_kernel_array = np.array([
+        [
+        [-1, -1, -1],
+        [-1,  8, -1],
+        [-1, -1, -1]
+        ],
+
+        [
+        [ 0, -1,  0],
+        [-1,  4, -1],
+        [ 0, -1,  0]
+        ],
+
+        [
+        [ 0,  0,  0],
+        [-1,  2, -1],
+        [ 0,  0,  0]
+        ],
+
+        [
+        [ 0, -1,  0],
+        [ 0,  2,  0],
+        [ 0, -1,  0]
+        ],
+        ])
+    
+    sharpend_kernel = sharpened_kernel_array[kernel_option] * intensity
+    sharpened_img = cv2.filter2D(img, cv2.CV_8U, sharpend_kernel)
+    return sharpened_img

@@ -11,6 +11,12 @@ from image_processing import *
 from basics import *
     
 if __name__ == "__main__":
+    # array = np.array([
+    #     [ 0,  0,  0],
+    #     [-1,  2, -1],
+    #     [ 0,  0,  0]
+    #     ],)
+
     config = get_config()
 
     filename = config['Test_image2']
@@ -18,13 +24,17 @@ if __name__ == "__main__":
     height, width = None, 256
     img = read_image(filename, height, width)
 
-    img0 = img.copy()
-    img1 = apply_flip(img,0)
-    # img1 = img.copy()
-    img2 = apply_flip(img,1)
-    img3 = apply_invert_colors(img)
-    img4 = apply_canny_filter(img)
-    img5 = apply_adaptiveThreshold_filter(img)
+    img1 = img.copy()
+    img2 = apply_sharpen_effect(img,0)
+    img3 = apply_sharpen_effect(img,1)
+    img4 = apply_single_channel(img, "r")
+    img4 = apply_thresholding_rgb(img4)
+    img5 = apply_grayscale_conversion(img)
+    img5 = apply_thresholding(img5)
+    img6 = apply_thresholding(img)
+    print((img5 == img6).all())
+    print((img6 == img6).all())
+    # img2 = img4 + img5
     # img = apply_emboss_filter(img)
 
-    show_image(3, img0, img1, img2, img3,img4, img5)
+    show_image(3, img1, img2, img3,img4, img5, img6)
