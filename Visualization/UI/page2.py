@@ -1,6 +1,6 @@
 from tkinter import ttk
 import tkmacosx
-from Visualization.funcs import change_color
+from ..funcs import change_color
 
 class Page2:
     def __init__(self, func_frame, main_app):

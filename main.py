@@ -1,5 +1,5 @@
 import tkinter as tk
-from Visualization.UI.video_app import VideoApp
+from .Visualization.UI.video_app import VideoApp
 
 def run_video_app():
     root = tk.Tk()
