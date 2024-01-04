@@ -1,6 +1,7 @@
 import sys
-parts = sys.path[0].split('/') 
-desired_path = '/'.join(parts[:5])
+# parts = sys.path[0].split('/') 
+# desired_path = '/'.join(parts[:5])
+desired_path = "D:/Casper/"
 sys.path.append(desired_path)
 from my_config import get_config
 
@@ -9,7 +10,7 @@ from image_processing import *
 from basics import *
 from fourier import *
 
-def test_filters(img):
+def test_filters(img, plot=False):
     img1 = img.copy()
     img2 = apply_sharpen_effect(img,0)
     img3 = apply_sharpen_effect(img,1)
@@ -32,9 +33,11 @@ def test_filters(img):
         (img5, "lpha"),
         (img6, "lreal"),
     ]
-    plot_2d_arrays(arrays)
+    if plot:
+        plot_2d_arrays(arrays)
+    return arrays
 
-def test_fourier(img):
+def test_fourier(img, plot=False):
     gray_img = np.array([
         [ 1000, 2000],
         [ 3000, 4000]
@@ -76,11 +79,15 @@ def test_fourier(img):
         (linear_real, "lreal"),
         # (linear_imag, "limag"),
     ]
-    plot_2d_arrays(arrays)
+    if plot:
+        plot_2d_arrays(arrays)
+    return arrays
+    # plot_2d_arrays(arrays)
     
 if __name__ == "__main__":
     config = get_config()
-    filename = config['Test_image2']
+    folder_path = config['Chill_norman']
+    filename = folder_path + "norman1.jpg"
     height, width = None, 256
     img = read_image(filename, height, width)
     test_filters(img)
