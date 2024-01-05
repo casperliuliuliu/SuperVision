@@ -57,6 +57,14 @@ def write_log(model_things,class_counts):
 # """
 #     pprint(log_message, show_time=True)
     return log_message
+def get_class_count(data_dir):
+    if datasets_is_split(data_dir):
+        train_path = os.path.join(data_dir, "train")
+    else:
+        train_path = data_dir
+
+    train_dataset = datasets.ImageFolder(train_path)
+    return train_dataset.classes
 
 def get_dataset_sizes(dataloaders):
     dataset_sizes = {
@@ -65,8 +73,6 @@ def get_dataset_sizes(dataloaders):
         'test': len(dataloaders['test'].dataset)
     }
     return dataset_sizes
-def get_class_count(dataloaders):
-    return sum(dataloaders['train'].dataset.classes)
 
 def get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size):
     if datasets_is_split(data_dir):

@@ -15,19 +15,19 @@ from datetime import datetime
 import random
 from torchvision import datasets, transforms
 from torchvision import models
-
+from methods import get_model,get_criterion,get_optimizer,get_lr_scheduler
 def train_model(model_things):
-    model = model_things['model']
+    num_class = model_things['num_class']
+    model = get_model(model_things['model_name'], num_class)
     num_of_epoch = model_things['num_of_epoch']
     data_dir = model_things['data_dir']
     train_ratio = model_things['train_ratio']
     val_ratio = model_things['val_ratio']
     batch_size = model_things['batch_size']
     data_transforms = model_things['data_transforms']
-    criterion = model_things['criterion']
-    optimizer = model_things['optimizer']
-    step_lr_scheduler = model_things['step_lr_scheduler']
-    num_class = model_things['num_class']
+    criterion = get_criterion(model_things['criterion_name'])
+    optimizer = get_optimizer(model_things['optimizer_name'], model)
+    lr_scheduler = get_lr_scheduler(model_things['lr_scheduler_name'], optimizer)
 
     dataloaders = get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size)
     dataset_sizes = get_dataset_sizes(dataloaders)
@@ -65,11 +65,11 @@ def train_model(model_things):
                         optimizer.step()
                 running_loss += loss.item() * inputs.size(0)
                 running_corrects += torch.sum(preds == labels.data)
-                # for ii in range(len(preds)):# statistics
-                #     confus[ labels.data[ii] ][ preds[ii] ]+=1
+                for ii in range(len(preds)):# statistics
+                    confus[ labels.data[ii] ][ preds[ii] ]+=1
                     
             if phase == 'train':
-                step_lr_scheduler.step()
+                lr_scheduler.step()
                 # pass
             epoch_loss = running_loss / dataset_sizes[phase]
             epoch_acc = running_corrects.double() / dataset_sizes[phase]
@@ -87,10 +87,10 @@ def train_model(model_things):
         time_elapsed // 60, time_elapsed % 60))
     pprint('Best val Acc: {:.4f}'.format(
                 best_acc))
-    log_message += '\n  Whole training complete in {:.0f}m {:.0f}s'.format(
-        time_elapsed // 60, time_elapsed % 60)
-    log_message +='\n Best val Acc={:.4f}'.format(
-                best_acc)
+    # log_message += '\n  Whole training complete in {:.0f}m {:.0f}s'.format(
+    #     time_elapsed // 60, time_elapsed % 60)
+    # log_message +='\n Best val Acc={:.4f}'.format(
+    #             best_acc)
     
     # send_email(log_message, model_name)
     
@@ -104,23 +104,22 @@ if __name__ == "__main__":
     pprint('',show_time=True)
 
     model_things = {
-        'model': models.resnet18(),
         'data_dir' : "D:/Casper/NSYSU/P2023/DATA/glomer_cg",
         'train_ratio' : 0.6,
         'val_ratio' : 0.5,
         'random_seed' : 42,
         'batch_size' : 20,
         'learning_rate' : 0.01,
-        'num_of_epoch' : 5,
+        'num_of_epoch' : 1,
         'pretrain' : True,
         'pretrain_category' : None,
-        'model_name' : 'simpleCNN',
+        'model_name' : 'sth',
         'other_info' : "To build training functions",
 
            }
-    model_things['criterion'] = nn.CrossEntropyLoss()
-    model_things['optimizer'] = optim.SGD(model_things['model'].parameters(), lr=model_things['learning_rate'])
-    model_things['step_lr_scheduler'] = lr_scheduler.StepLR(model_things['optimizer'], step_size=50, gamma=0.1)
+    model_things['criterion_name'] = "sth"
+    model_things['optimizer_name'] = "sth"
+    model_things['lr_scheduler_name'] = "sth"
 
     model_things['data_transforms'] = {
             'train': transforms.Compose([
@@ -137,5 +136,6 @@ if __name__ == "__main__":
             ]),
         }
 
-    model_things['num_class'] = 10
+    model_things['class_count'] = get_class_count(model_things['data_dir'])
+    model_things['num_class'] =  len(model_things['class_count'])
     train_model(model_things)
