@@ -1,11 +1,11 @@
 # Package
-import numpy as np
+import os
 import torch
-from torchvision import datasets, transforms
-from torch.utils.data import DataLoader, Subset
 import random
-from torch.utils.data import ConcatDataset
-
+import numpy as np
+from PPRINT import pprint
+from torchvision import datasets, transforms
+from torch.utils.data import DataLoader, Subset, ConcatDataset
 
 def count_parameters(model):
     total_num = 0
@@ -14,6 +14,59 @@ def count_parameters(model):
         if parameter.requires_grad:
             total_num += parameter.numel() 
     return total_num
+
+def write_log(model_things,class_counts):
+    # Change to write information with for loops.
+    log_message = ""
+
+#     learning_rate = model_things['learning_rate']
+#     num_of_epoch = model_things['num_of_epoch']
+#     data_dir = model_things['data_dir']
+#     lr_method = model_things['lr_method']
+#     train_ratio = model_things['train_ratio']
+#     val_ratio = model_things['val_ratio']
+#     weight_store_path = model_things['weight_store_path']
+#     pretrain = model_things['pretrain']
+#     batch_size = model_things['batch_size']
+#     model_name = model_things['model_name']
+#     other_info = model_things['other_info']
+#     dropout_prob = model_things['dropout_prob']
+#     data_transforms_op = model_things['data_transforms_op']
+    
+#     log_message = f"""
+# Base:
+#     model: {model_name}
+#     Dataset: {class_counts}
+#     Dataset dir: {data_dir}
+
+# Train:
+#     epoch: {num_of_epoch}
+#     pretrained: {pretrain}
+#     batch size: {batch_size}
+#     learning rate: {learning_rate}
+#     lr method: {lr_method}
+#     split ratio: {train_ratio}
+#     val/test ratio: {val_ratio}
+#     dropout rate: {dropout_prob}
+#     transform Opt: {data_transforms_op}
+    
+# Other Information:
+#     {other_info}
+    
+#     weight dir: {weight_store_path}
+# """
+#     pprint(log_message, show_time=True)
+    return log_message
+
+def get_dataset_sizes(dataloaders):
+    dataset_sizes = {
+        'train': len(dataloaders['train'].dataset),
+        'val': len(dataloaders['val'].dataset),
+        'test': len(dataloaders['test'].dataset)
+    }
+    return dataset_sizes
+def get_class_count(dataloaders):
+    return sum(dataloaders['train'].dataset.classes)
 
 def get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size):
     if datasets_is_split(data_dir):
@@ -33,16 +86,16 @@ def get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_siz
     test_dataset = datasets.ImageFolder(test_path, transform = data_transforms['test'])
 
     for i, class_name in enumerate(train_dataset.classes):
-        print(f"Class label {i}: {class_name}")
+        pprint(f"Class label {i}: {class_name}")
 
     if not datasets_is_split(data_dir):
         num_train = len(test_dataset)
         indices = list(range(num_train))
-        print("--------- INDEX checking ---------")
-        print(f"Original: {indices[:5]}")
+        pprint("--------- INDEX checking ---------")
+        pprint(f"Original: {indices[:5]}")
         random.shuffle(indices)
-        print(f"Shuffled: {indices[:5]}")
-        print("--------- INDEX shuffled ---------\n")
+        pprint(f"Shuffled: {indices[:5]}")
+        pprint("--------- INDEX shuffled ---------\n")
 
         split_train = int(np.floor(train_ratio * num_train))
         split_val = split_train + int(np.floor(val_ratio * (num_train-split_train)))
@@ -60,12 +113,11 @@ def get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_siz
     val_loader = DataLoader(val_dataset, batch_size=batch_size)
     test_loader = DataLoader(test_dataset, batch_size=batch_size)
         
-    # check dataset
-    print(f"Total number of samples: {len(train_loader.dataset) + len(val_loader.dataset) + len(test_loader.dataset)} datapoints")
-    print(f"Number of train samples: {len(train_loader)} batches/ {len(train_loader.dataset)} datapoints")
-    print(f"Number of val samples: {len(val_loader)} batches/ {len(val_loader.dataset)} datapoints")
-    print(f"Number of test samples: {len(test_loader)} batches/ {len(test_loader.dataset)} datapoints")
-    print(f"Data Transform: {data_transforms.keys()}\n")
+    pprint(f"Total number of samples: {len(train_loader.dataset) + len(val_loader.dataset) + len(test_loader.dataset)} datapoints")
+    pprint(f"Number of train samples: {len(train_loader)} batches/ {len(train_loader.dataset)} datapoints")
+    pprint(f"Number of val samples: {len(val_loader)} batches/ {len(val_loader.dataset)} datapoints")
+    pprint(f"Number of test samples: {len(test_loader)} batches/ {len(test_loader.dataset)} datapoints")
+    pprint(f"Data Transform: {data_transforms.keys()}\n")
     
     dataloaders = {
         "train": train_loader,
@@ -73,7 +125,6 @@ def get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_siz
         "test": test_loader,
     }
     return dataloaders
-import os
 
 def datasets_is_split(path):
     folders_to_check = ['train', 'val', 'test']
@@ -84,8 +135,6 @@ def datasets_is_split(path):
             return False
 
     return True
-
-
 
 if __name__ == "__main__":
     data_dir = "D:/Casper/Data/Animals-10/raw-img"
@@ -109,5 +158,6 @@ if __name__ == "__main__":
 
     torch.manual_seed(645)
     random.seed(645)
+    pprint('', show_time=True)
     dataloader = get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size)
-    print(dataloader)
+    pprint(dataloader)
