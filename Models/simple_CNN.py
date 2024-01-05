@@ -3,10 +3,10 @@ import torch
 import torch.nn as nn
 
 class SimpleCNN(nn.Module):
-    def __init__(self, resolution=256):
+    def __init__(self, resolution=256, out_channels=1):
         super(SimpleCNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 1, kernel_size=3, padding=1)
-        self.fc1 = nn.Linear(1 * resolution * resolution, 10)
+        self.conv1 = nn.Conv2d(3, out_channels, kernel_size=3, padding=1)
+        self.fc1 = nn.Linear(out_channels * resolution * resolution, 10)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -30,4 +30,4 @@ if __name__ == "__main__":
     #     print(parameter.shape)
         # total_num += sum(parameter.shape)
         # print(total_num)
-    print(count_parameters(model))
+    # print(count_parameters(model))
