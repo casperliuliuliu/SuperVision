@@ -1,7 +1,6 @@
 import torch.nn as nn
 import torch.optim as optim
 from torch.optim import lr_scheduler
-from torchvision import datasets
 from torchvision import models
 
 def get_model(model_name, num_class_counts):

@@ -1,40 +1,37 @@
 
-from PPRINT import pprint
-from basics import get_dataloaders, get_dataset_sizes, get_class_count
-import torch
-import torch.nn as nn
-import torch.optim as optim
-from torch.optim import lr_scheduler
-from torchvision import datasets
 import time
 import copy
+import torch
 from tqdm import tqdm
+from torchvision import transforms
+from RunModels.pprint import pprint
+from RunModels.data_transforming import get_data_transform
+from RunModels.basics import get_dataloaders, get_dataset_sizes, get_class_count
 
-from torch.utils.data import DataLoader, Subset
-from datetime import datetime
-import random
-from torchvision import datasets, transforms
-from torchvision import models
-from methods import get_model,get_criterion,get_optimizer,get_lr_scheduler
+
+from RunModels.methods import get_model, get_criterion, get_optimizer, get_lr_scheduler
+
 def train_model(model_things):
-    num_class = model_things['num_class']
+    class_count = get_class_count(model_things['data_dir'])
+    num_class = len(class_count)
+    
     model = get_model(model_things['model_name'], num_class)
-    num_of_epoch = model_things['num_of_epoch']
-    data_dir = model_things['data_dir']
-    train_ratio = model_things['train_ratio']
-    val_ratio = model_things['val_ratio']
-    batch_size = model_things['batch_size']
-    data_transforms = model_things['data_transforms']
     criterion = get_criterion(model_things['criterion_name'])
     optimizer = get_optimizer(model_things['optimizer_name'], model)
     lr_scheduler = get_lr_scheduler(model_things['lr_scheduler_name'], optimizer)
 
+    data_dir = model_things['data_dir']
+    train_ratio = model_things['train_ratio']
+    val_ratio = model_things['val_ratio']
+    batch_size = model_things['batch_size']
+    num_of_epoch = model_things['num_of_epoch']
+
+    data_transforms = get_data_transform(model_things['data_transform_name'])
     dataloaders = get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size)
-    dataset_sizes = get_dataset_sizes(dataloaders)
-    
+    dataset_sizes = get_dataset_sizes(dataloaders)    
     model = model.cuda()
+    start_time = time.time()
     
-    since = time.time()
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
     for epoch in range(num_of_epoch):
@@ -46,6 +43,7 @@ def train_model(model_things):
                 model.train()  # Set model to training mode
             else:
                 model.eval()   # Set model to evaluate mode
+
             running_loss = 0.0
             running_corrects = 0
             
@@ -55,9 +53,11 @@ def train_model(model_things):
                 with torch.set_grad_enabled(phase == 'train'): # forward # track history if only in train
                     outputs = model(inputs)
                     _, preds = torch.max(outputs, 1)
+
                     # This is for printing the probability of each preds
                     # probabilities = F.softmax(outputs, dim=1)
                     # print(probabilities)
+
                     loss = criterion(outputs, labels)
                     if phase == 'train': # backward + optimize only if in training phase
                         optimizer.zero_grad()
@@ -70,7 +70,7 @@ def train_model(model_things):
                     
             if phase == 'train':
                 lr_scheduler.step()
-                # pass
+
             epoch_loss = running_loss / dataset_sizes[phase]
             epoch_acc = running_corrects.double() / dataset_sizes[phase]
             pprint(confus)
@@ -82,7 +82,7 @@ def train_model(model_things):
                 best_acc = epoch_acc
                 best_model_wts = copy.deepcopy(model.state_dict()) 
         print()
-    time_elapsed = time.time() - since
+    time_elapsed = time.time() - start_time
     pprint('Training complete in {:.0f}m {:.0f}s'.format(
         time_elapsed // 60, time_elapsed % 60))
     pprint('Best val Acc: {:.4f}'.format(
@@ -136,6 +136,5 @@ if __name__ == "__main__":
             ]),
         }
 
-    model_things['class_count'] = get_class_count(model_things['data_dir'])
     model_things['num_class'] =  len(model_things['class_count'])
     train_model(model_things)

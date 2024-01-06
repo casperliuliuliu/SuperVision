@@ -3,7 +3,7 @@ import os
 import torch
 import random
 import numpy as np
-from PPRINT import pprint
+from pprint import pprint
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, Subset, ConcatDataset
 
@@ -15,7 +15,7 @@ def count_parameters(model):
             total_num += parameter.numel() 
     return total_num
 
-def write_log(model_things,class_counts):
+def produce_message(model_things):
     # Change to write information with for loops.
     log_message = ""
 
