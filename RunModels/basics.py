@@ -56,6 +56,21 @@ def produce_message(model_things):
 # """
 #     pprint(log_message, show_time=True)
     return log_message
+
+def format_number(num):
+    if num >= 1e12:
+        return f"{num/1e12:.0f}T"
+    elif num >= 1e9:
+        return f"{num/1e9:.0f}B"
+    elif num >= 1e6:
+        return f"{num/1e6:.0f}M"
+    elif num >= 1e3:
+        return f"{num/1e3:.0f}K"
+    else:
+        return str(num)
+
+
+
 def get_class_count(data_dir):
     if datasets_is_split(data_dir):
         train_path = os.path.join(data_dir, "train")
@@ -72,8 +87,7 @@ def get_dataset_sizes(dataloaders):
         'test': len(dataloaders['test'].dataset)
     }
     return dataset_sizes
-
-def get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size, random_seed):
+def get_datasets(data_dir, data_transforms, train_ratio, val_ratio, batch_size, random_seed, max_number_of_data=None, classes_list=None):
     if datasets_is_split(data_dir):
         train_path = os.path.join(data_dir, "train")
         val_path = os.path.join(data_dir, "val")
@@ -110,14 +124,22 @@ def get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_siz
         val_dataset = Subset(val_dataset, val_idx)
         test_dataset = Subset(test_dataset, test_idx)
         
-        for ii in range(len(data_transforms.keys())-3):
-            aug_dataset = datasets.ImageFolder(data_dir, transform = data_transforms[f'aug{ii}'])
-            aug_sub = Subset(aug_dataset, train_idx)
-            train_dataset = ConcatDataset([train_dataset, aug_sub])
-        
-    train_loader = DataLoader(train_dataset, batch_size=batch_size)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size)
+    for ii in range(len(data_transforms.keys())-3):
+        aug_dataset = datasets.ImageFolder(train_path, transform = data_transforms[f'aug{ii}'])
+        aug_sub = Subset(aug_dataset, train_idx)
+        train_dataset = ConcatDataset([train_dataset, aug_sub])
+
+    return {
+        'train' : train_dataset,
+        'val' : val_dataset,
+        'test' : test_dataset,
+    }
+def get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size, random_seed, max_number_of_data=None, classes_list=None):
+    
+    datasets = get_datasets()
+    train_loader = DataLoader(datasets['train'], batch_size=batch_size)
+    val_loader = DataLoader(datasets['val'], batch_size=batch_size)
+    test_loader = DataLoader(datasets['test'], batch_size=batch_size)
         
     pprint(f"Total number of samples: {len(train_loader.dataset) + len(val_loader.dataset) + len(test_loader.dataset)} datapoints")
     pprint(f"Number of train samples: {len(train_loader)} batches/ {len(train_loader.dataset)} datapoints")
@@ -143,25 +165,29 @@ def datasets_is_split(path):
     return True
 
 if __name__ == "__main__":
-    data_dir = "D:/Casper/Data/Animals-10/raw-img"
-    data_transforms = {
-            'train': transforms.Compose([
-                transforms.Resize(224),
-                transforms.ToTensor(),
-            ]),
-            'val':transforms.Compose([
-                transforms.Resize(224),
-                transforms.ToTensor(),
-            ]),
-            'test':transforms.Compose([
-                transforms.Resize(224),
-                transforms.ToTensor(),
-            ]),
-        }
-    train_ratio = 0.6
-    val_ratio = 0.5
-    batch_size = 100
+    # data_dir = "D:/Casper/Data/Animals-10/raw-img"
+    # data_transforms = {
+    #         'train': transforms.Compose([
+    #             transforms.Resize(224),
+    #             transforms.ToTensor(),
+    #         ]),
+    #         'val':transforms.Compose([
+    #             transforms.Resize(224),
+    #             transforms.ToTensor(),
+    #         ]),
+    #         'test':transforms.Compose([
+    #             transforms.Resize(224),
+    #             transforms.ToTensor(),
+    #         ]),
+    #     }
+    # train_ratio = 0.6
+    # val_ratio = 0.5
+    # batch_size = 100
 
-    pprint('', show_time=True)
-    dataloader = get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size)
-    pprint(dataloader)
+    # pprint('', show_time=True)
+    # dataloader = get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size)
+    # pprint(dataloader)
+
+    # Example usage:
+    print(format_number(12000))   # Output: 12K
+    print(format_number(365123456))  # Output: 365M

@@ -7,8 +7,8 @@ from torchvision import transforms
 from RunModels.cprint import pprint
 from Models.get_model import get_model
 from RunModels.data_transforming import get_data_transform
-from RunModels.basics import get_dataloaders, get_dataset_sizes, get_class_count
 from RunModels.methods import get_criterion, get_optimizer, get_lr_scheduler
+from RunModels.basics import get_dataloaders, get_dataset_sizes, get_class_count, count_parameters, format_number
 
 def train_model(model_things):
     class_count = get_class_count(model_things['data_dir'])
@@ -18,6 +18,8 @@ def train_model(model_things):
     criterion = get_criterion(model_things['criterion_name'])
     optimizer = get_optimizer(model_things['optimizer_name'], model)
     lr_scheduler = get_lr_scheduler(model_things['lr_scheduler_name'], optimizer)
+    parameters_num = count_parameters(model)
+    pprint(f"Total number of parameter in model: {format_number(parameters_num)}")
 
     data_dir = model_things['data_dir']
     train_ratio = model_things['train_ratio']

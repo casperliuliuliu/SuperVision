@@ -11,8 +11,8 @@ class SimpleCNN(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
-        x = self.relu(x)  # Apply ReLU activation
         x = torch.flatten(x, 1)
+        x = self.relu(x)  # Apply ReLU activation
         x = self.fc1(x)
         
         return x
