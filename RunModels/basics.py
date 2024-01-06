@@ -2,7 +2,7 @@
 import os
 import random
 import numpy as np
-from cprint import pprint
+from RunModels.cprint import pprint
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, Subset, ConcatDataset
 

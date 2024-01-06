@@ -4,12 +4,11 @@ import copy
 import torch
 from tqdm import tqdm
 from torchvision import transforms
-from cprint import pprint
-from data_transforming import get_data_transform
-from basics import get_dataloaders, get_dataset_sizes, get_class_count
-
-
-from methods import get_model, get_criterion, get_optimizer, get_lr_scheduler
+from RunModels.cprint import pprint
+from Models.get_model import get_model
+from RunModels.data_transforming import get_data_transform
+from RunModels.basics import get_dataloaders, get_dataset_sizes, get_class_count
+from RunModels.methods import get_criterion, get_optimizer, get_lr_scheduler
 
 def train_model(model_things):
     class_count = get_class_count(model_things['data_dir'])
@@ -124,15 +123,15 @@ if __name__ == "__main__":
 
     model_things['data_transforms'] = {
             'train': transforms.Compose([
-                transforms.Resize(224),
+                transforms.Resize(224, 224),
                 transforms.ToTensor(),
             ]),
             'val':transforms.Compose([
-                transforms.Resize(224),
+                transforms.Resize(224, 224),
                 transforms.ToTensor(),
             ]),
             'test':transforms.Compose([
-                transforms.Resize(224),
+                transforms.Resize(224, 224),
                 transforms.ToTensor(),
             ]),
         }

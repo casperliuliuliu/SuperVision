@@ -1,5 +1,5 @@
 from datetime import datetime
-from train_config import get_config
+from RunModels.train_config import get_config
 """ 
 print and fprint at the same time
 """
