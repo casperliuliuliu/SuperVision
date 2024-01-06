@@ -1,9 +1,8 @@
 # Package
 import os
-import torch
 import random
 import numpy as np
-from pprint import pprint
+from cprint import pprint
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, Subset, ConcatDataset
 
@@ -74,7 +73,7 @@ def get_dataset_sizes(dataloaders):
     }
     return dataset_sizes
 
-def get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size):
+def get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size, random_seed):
     if datasets_is_split(data_dir):
         train_path = os.path.join(data_dir, "train")
         val_path = os.path.join(data_dir, "val")
@@ -99,6 +98,7 @@ def get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_siz
         indices = list(range(num_train))
         pprint("--------- INDEX checking ---------")
         pprint(f"Original: {indices[:5]}")
+        random.seed(random_seed)
         random.shuffle(indices)
         pprint(f"Shuffled: {indices[:5]}")
         pprint("--------- INDEX shuffled ---------\n")
@@ -162,8 +162,6 @@ if __name__ == "__main__":
     val_ratio = 0.5
     batch_size = 100
 
-    torch.manual_seed(645)
-    random.seed(645)
     pprint('', show_time=True)
     dataloader = get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size)
     pprint(dataloader)

@@ -4,12 +4,12 @@ import copy
 import torch
 from tqdm import tqdm
 from torchvision import transforms
-from RunModels.pprint import pprint
-from RunModels.data_transforming import get_data_transform
-from RunModels.basics import get_dataloaders, get_dataset_sizes, get_class_count
+from cprint import pprint
+from data_transforming import get_data_transform
+from basics import get_dataloaders, get_dataset_sizes, get_class_count
 
 
-from RunModels.methods import get_model, get_criterion, get_optimizer, get_lr_scheduler
+from methods import get_model, get_criterion, get_optimizer, get_lr_scheduler
 
 def train_model(model_things):
     class_count = get_class_count(model_things['data_dir'])
@@ -25,9 +25,10 @@ def train_model(model_things):
     val_ratio = model_things['val_ratio']
     batch_size = model_things['batch_size']
     num_of_epoch = model_things['num_of_epoch']
+    random_seed = model_things['random_seed']
 
     data_transforms = get_data_transform(model_things['data_transform_name'])
-    dataloaders = get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size)
+    dataloaders = get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size, random_seed)
     dataset_sizes = get_dataset_sizes(dataloaders)    
     model = model.cuda()
     start_time = time.time()

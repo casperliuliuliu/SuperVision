@@ -1,7 +1,7 @@
-
-
 def get_config():
-    data = {
+
+
+    config = {
         'model_name' : 'sth',
         'criterion_name' : "sth",
         'optimizer_name' : "sth",
@@ -14,6 +14,7 @@ def get_config():
         'batch_size' : 20,
         'learning_rate' : 0.01,
         'num_of_epoch' : 1,
+        'random_seed' : 645,
         'pretrain' : True,
         'pretrain_category' : None,
         'data_transform_name' : "sth",
@@ -21,4 +22,6 @@ def get_config():
         'other_info' : "To build training functions",
         'log_file_path': 'D:/Casper/Log/log_0106.txt',
     }
-    return data
+
+    
+    return config
