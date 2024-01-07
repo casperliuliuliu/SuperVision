@@ -87,7 +87,7 @@ def get_dataset_sizes(dataloaders):
         'test': len(dataloaders['test'].dataset)
     }
     return dataset_sizes
-def get_datasets(data_dir, data_transforms, train_ratio, val_ratio, batch_size, random_seed, max_number_of_data=None, classes_list=None):
+def get_datasets(data_dir, data_transforms, train_ratio, val_ratio, random_seed):
     if datasets_is_split(data_dir):
         train_path = os.path.join(data_dir, "train")
         val_path = os.path.join(data_dir, "val")
@@ -134,9 +134,10 @@ def get_datasets(data_dir, data_transforms, train_ratio, val_ratio, batch_size, 
         'val' : val_dataset,
         'test' : test_dataset,
     }
+
 def get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size, random_seed, max_number_of_data=None, classes_list=None):
     
-    datasets = get_datasets()
+    datasets = get_datasets(data_dir, data_transforms, train_ratio, val_ratio, random_seed)
     train_loader = DataLoader(datasets['train'], batch_size=batch_size)
     val_loader = DataLoader(datasets['val'], batch_size=batch_size)
     test_loader = DataLoader(datasets['test'], batch_size=batch_size)
