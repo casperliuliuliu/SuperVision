@@ -11,8 +11,11 @@ from RunModels.methods import get_criterion, get_optimizer, get_lr_scheduler
 from RunModels.basics import get_dataset_sizes, get_class_count, count_parameters, format_number
 from RunModels.data_loader import get_dataloaders
 def train_model(model_things):
+    classes_list = model_things['classes_list']
     class_count = get_class_count(model_things['data_dir'])
+    print(class_count)
     num_class = len(class_count)
+
     
     model = get_model(model_things['model_name'], num_class)
     criterion = get_criterion(model_things['criterion_name'])
@@ -28,7 +31,6 @@ def train_model(model_things):
     num_of_epoch = model_things['num_of_epoch']
     random_seed = model_things['random_seed']
     num_per_class = model_things['num_per_class']
-    classes_list = model_things['classes_list']
  
     data_transforms = get_data_transform(model_things['data_transform_name'])
     dataloaders = get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size, random_seed,  num_per_class, classes_list)
