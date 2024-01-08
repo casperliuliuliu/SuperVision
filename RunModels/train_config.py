@@ -13,10 +13,10 @@ def get_config():
         'random_seed' : 42,
         'batch_size' : 4,
         'learning_rate' : 0.01,
-        'num_of_epoch' : 2,
+        'num_of_epoch' : 20,
         'random_seed' : 645,
         'num_per_class' : 10,
-        'classes_list' : [0, 1, 2, 4],
+        'classes_list' : ['cane','cavallo','elefante','gallina'],
 
         'pretrain' : True,
         'pretrain_category' : None,
