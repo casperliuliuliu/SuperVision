@@ -1,8 +1,6 @@
 from datetime import datetime
 from RunModels.train_config import get_config
-""" 
-print and fprint at the same time
-"""
+
 
 def pprint(output = '\n' , filename = get_config()['log_file_path'], show_time = False):
     

@@ -3,45 +3,11 @@ import numpy as np
 import random
 import torch
 from RunModels.cprint import pprint
+from RunModels.CustomDataset import FilteredDataset
 from torchvision import datasets
 from torchvision import transforms
-from torchvision.datasets.vision import VisionDataset
-from torch.utils.data import DataLoader, Subset, ConcatDataset, Dataset
+from torch.utils.data import DataLoader, Subset, ConcatDataset
 
-class FilteredDataset(VisionDataset):
-    IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tiff', '.webp')
-    def __init__(self, original_dataset, class_list):
-
-        classes = class_list
-        self.classes = class_list
-
-        class_to_idx = {}
-        for ii, class_name in enumerate(classes):
-            class_to_idx[class_name] = ii
-        self.class_to_idx = class_to_idx
-
-        self.loader = original_dataset.loader
-        self.extensions = self.IMG_EXTENSIONS
-        self.transform = original_dataset.transform
-        self.target_transform = original_dataset.target_transform
-
-        samples = datasets.folder.make_dataset(original_dataset.root, class_to_idx, self.IMG_EXTENSIONS)
-        self.samples = samples
-        self.targets = [sample[1] for sample in samples]
-
-    def __getitem__(self, index):
-        path, target = self.samples[index]
-        sample = self.loader(path)
-        if self.transform is not None:
-            sample = self.transform(sample)
-        if self.target_transform is not None:
-            target = self.target_transform(target)
-
-        return sample, target
-
-    def __len__(self):
-        return len(self.samples)
-    
 def is_dataset_sorted_by_class(dataset):
     last_label = None
     for _, label in dataset.samples:
@@ -107,8 +73,8 @@ def get_datasets(data_dir, data_transforms, train_ratio, val_ratio, random_seed,
     ori_train_dataset = datasets.ImageFolder(train_path, transform = data_transforms['train'])
     ori_val_dataset = datasets.ImageFolder(val_path, transform = data_transforms['val'])
     ori_test_dataset = datasets.ImageFolder(test_path, transform = data_transforms['test'])
-
-    if classes_list is not None:
+    train_dataset = ori_train_dataset
+    if classes_list:
         train_dataset = FilteredDataset(ori_train_dataset, classes_list)
         val_dataset = FilteredDataset(ori_val_dataset, classes_list)
         test_dataset = FilteredDataset(ori_test_dataset, classes_list)
@@ -120,7 +86,7 @@ def get_datasets(data_dir, data_transforms, train_ratio, val_ratio, random_seed,
     
     if not datasets_is_split(data_dir):
         num_train = len(train_dataset)
-        pprint(num_train)
+        pprint(f"Total Available Data: {num_train} datapoints (Train + Val + Test, No Aug)")
         indices = train_dataset.indices
 
         random.seed(random_seed)
@@ -145,6 +111,10 @@ def get_datasets(data_dir, data_transforms, train_ratio, val_ratio, random_seed,
         'test' : test_dataset,
     }
 
+def show_sample(data_loader):
+    for _, label in data_loader:
+        print(label)
+
 def get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size, random_seed, num_per_class=-1, classes_list=None):
     torch.manual_seed(random_seed)
     
@@ -157,18 +127,6 @@ def get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_siz
     pprint(f"Number of train samples: {len(train_loader)} batches/ {len(train_loader.dataset)} datapoints")
     pprint(f"Number of val samples: {len(val_loader)} batches/ {len(val_loader.dataset)} datapoints")
     pprint(f"Number of test samples: {len(test_loader)} batches/ {len(test_loader.dataset)} datapoints")
-    
-    # print("train")
-
-    # for _, thing in train_loader:
-    #     print(thing)
-    # print("val")
-    # for data, label in val_loader:
-    #     print(label)
-
-    # print("test")
-    # for data, label in test_loader:
-    #     print(label)
 
     dataloaders = {
         "train": train_loader,
