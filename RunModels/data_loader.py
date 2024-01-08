@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import random
+import torch
 # from RunModels.cprint import pprint
 from torchvision import datasets
 from torchvision import transforms
@@ -66,14 +67,14 @@ def get_datasets(data_dir, data_transforms, train_ratio, val_ratio, random_seed,
         val_path = same_dir
         test_path = same_dir
 
-    train_dataset = datasets.ImageFolder(train_path, transform = data_transforms['train'])
-    train_dataset = filter_dataset_by_classes_list_and_n_per_class(train_dataset, num_per_class, classes_list)
+    ori_train_dataset = datasets.ImageFolder(train_path, transform = data_transforms['train'])
+    train_dataset = filter_dataset_by_classes_list_and_n_per_class(ori_train_dataset, num_per_class, classes_list)
 
-    val_dataset = datasets.ImageFolder(val_path, transform = data_transforms['val'])
-    val_dataset = filter_dataset_by_classes_list_and_n_per_class(val_dataset, -1, classes_list)
+    ori_val_dataset = datasets.ImageFolder(val_path, transform = data_transforms['val'])
+    val_dataset = filter_dataset_by_classes_list_and_n_per_class(ori_val_dataset, -1, classes_list)
 
-    test_dataset = datasets.ImageFolder(test_path, transform = data_transforms['test'])
-    test_dataset = filter_dataset_by_classes_list_and_n_per_class(test_dataset, -1, classes_list)
+    ori_test_dataset = datasets.ImageFolder(test_path, transform = data_transforms['test'])
+    test_dataset = filter_dataset_by_classes_list_and_n_per_class(ori_test_dataset, -1, classes_list)
 
     for i, class_name in enumerate(train_dataset.dataset.classes):
         print(f"Class label {i}: {class_name}")
@@ -88,18 +89,14 @@ def get_datasets(data_dir, data_transforms, train_ratio, val_ratio, random_seed,
         split_train = int(np.floor(train_ratio * num_train))
         split_val = split_train + int(np.floor(val_ratio * (num_train-split_train)))
         train_idx, val_idx, test_idx = indices[0:split_train], indices[split_train:split_val], indices[split_val:]
-        train_dataset = Subset(train_dataset, train_idx)
-        val_dataset = Subset(val_dataset, val_idx)
-        test_dataset = Subset(test_dataset, test_idx)
+        train_dataset = Subset(ori_train_dataset, train_idx)
+        val_dataset = Subset(ori_val_dataset, val_idx)
+        test_dataset = Subset(ori_test_dataset, test_idx)
 
     for ii in range(len(data_transforms.keys())-3):
         aug_dataset = datasets.ImageFolder(train_path, transform = data_transforms[f'aug{ii}'])
         aug_sub = Subset(aug_dataset, train_idx)
         train_dataset = ConcatDataset([train_dataset, aug_sub])
-
-    # print(train_dataset.indices)
-    # print(val_dataset.indices)
-    # print(test_dataset.indices)
     return {
         'train' : train_dataset,
         'val' : val_dataset,
@@ -107,17 +104,30 @@ def get_datasets(data_dir, data_transforms, train_ratio, val_ratio, random_seed,
     }
 
 def get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size, random_seed, num_per_class=-1, classes_list=None):
+    torch.manual_seed(random_seed)
     
     datasets = get_datasets(data_dir, data_transforms, train_ratio, val_ratio, random_seed, num_per_class, classes_list)
     train_loader = DataLoader(datasets['train'], batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(datasets['val'], batch_size=batch_size, shuffle=True)
-    test_loader = DataLoader(datasets['test'], batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(datasets['val'], batch_size=batch_size)
+    test_loader = DataLoader(datasets['test'], batch_size=batch_size)
         
     print(f"Total number of samples: {len(train_loader.dataset) + len(val_loader.dataset) + len(test_loader.dataset)} datapoints")
     print(f"Number of train samples: {len(train_loader)} batches/ {len(train_loader.dataset)} datapoints")
     print(f"Number of val samples: {len(val_loader)} batches/ {len(val_loader.dataset)} datapoints")
     print(f"Number of test samples: {len(test_loader)} batches/ {len(test_loader.dataset)} datapoints")
     
+    print("train")
+    for data, label in train_loader:
+        print(label)
+
+    # print("val")
+    # for data, label in val_loader:
+    #     print(label)
+
+    # print("test")
+    # for data, label in test_loader:
+    #     print(label)
+
     dataloaders = {
         "train": train_loader,
         "val": val_loader,
@@ -140,17 +150,21 @@ if __name__ == "__main__":
     data_dir = "D:/Casper/Data/Animals-10/raw-img"
     data_transforms = {
             'train': transforms.Compose([
-                transforms.Resize(224),
+                transforms.Resize((224, 224)),
                 transforms.ToTensor(),
             ]),
             'val':transforms.Compose([
-                transforms.Resize(224),
+                transforms.Resize((224, 224)),
                 transforms.ToTensor(),
             ]),
             'test':transforms.Compose([
-                transforms.Resize(224),
+                transforms.Resize((224, 224)),
+                transforms.ToTensor(),
+            ]),
+            'aug0': transforms.Compose([
+                transforms.Resize((224, 224)),
                 transforms.ToTensor(),
             ]),
         }
     # get_datasets(data_dir, data_transforms, 0.6, 0.5, 645)
-    get_dataloaders(data_dir, data_transforms, 0.6, 0.5, 4, 645, -1, [0,1,2])
+    data_loaders = get_dataloaders(data_dir, data_transforms, 0.6, 1, 4, 645, 10, [0,1,2,4])

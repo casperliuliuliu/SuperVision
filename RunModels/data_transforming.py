@@ -14,6 +14,10 @@ def get_data_transform(data_transform_name):
                 transforms.Resize((224, 224)),
                 transforms.ToTensor(),
             ]),
+            'aug0': transforms.Compose([
+                transforms.Resize((224, 224)),
+                transforms.ToTensor(),
+            ]),
         }
     
     return data_transform
