@@ -1,11 +1,7 @@
 # Package
 import os
-import random
-import numpy as np
-from RunModels.cprint import pprint
-from torchvision import datasets, transforms
-from torch.utils.data import DataLoader, Subset, ConcatDataset
-
+from torchvision import datasets
+from RunModels.data_loader import datasets_is_split
 def count_parameters(model):
     total_num = 0
 
@@ -87,83 +83,8 @@ def get_dataset_sizes(dataloaders):
         'test': len(dataloaders['test'].dataset)
     }
     return dataset_sizes
-def get_datasets(data_dir, data_transforms, train_ratio, val_ratio, random_seed):
-    if datasets_is_split(data_dir):
-        train_path = os.path.join(data_dir, "train")
-        val_path = os.path.join(data_dir, "val")
-        test_path = os.path.join(data_dir, "test")
 
-    else:
-        same_dir = data_dir
 
-        train_path = same_dir
-        val_path = same_dir
-        test_path = same_dir
-
-    train_dataset = datasets.ImageFolder(train_path, transform = data_transforms['train'])
-    val_dataset = datasets.ImageFolder(val_path, transform = data_transforms['val'])
-    test_dataset = datasets.ImageFolder(test_path, transform = data_transforms['test'])
-
-    for i, class_name in enumerate(train_dataset.classes):
-        pprint(f"Class label {i}: {class_name}")
-
-    if not datasets_is_split(data_dir):
-        num_train = len(test_dataset)
-        indices = list(range(num_train))
-        pprint("--------- INDEX checking ---------")
-        pprint(f"Original: {indices[:5]}")
-        random.seed(random_seed)
-        random.shuffle(indices)
-        pprint(f"Shuffled: {indices[:5]}")
-        pprint("--------- INDEX shuffled ---------\n")
-
-        split_train = int(np.floor(train_ratio * num_train))
-        split_val = split_train + int(np.floor(val_ratio * (num_train-split_train)))
-        train_idx, val_idx, test_idx = indices[0:split_train], indices[split_train:split_val], indices[split_val:]
-        train_dataset = Subset(train_dataset, train_idx)
-        val_dataset = Subset(val_dataset, val_idx)
-        test_dataset = Subset(test_dataset, test_idx)
-        
-    for ii in range(len(data_transforms.keys())-3):
-        aug_dataset = datasets.ImageFolder(train_path, transform = data_transforms[f'aug{ii}'])
-        aug_sub = Subset(aug_dataset, train_idx)
-        train_dataset = ConcatDataset([train_dataset, aug_sub])
-
-    return {
-        'train' : train_dataset,
-        'val' : val_dataset,
-        'test' : test_dataset,
-    }
-
-def get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size, random_seed, max_number_of_data=None, classes_list=None):
-    
-    datasets = get_datasets(data_dir, data_transforms, train_ratio, val_ratio, random_seed)
-    train_loader = DataLoader(datasets['train'], batch_size=batch_size)
-    val_loader = DataLoader(datasets['val'], batch_size=batch_size)
-    test_loader = DataLoader(datasets['test'], batch_size=batch_size)
-        
-    pprint(f"Total number of samples: {len(train_loader.dataset) + len(val_loader.dataset) + len(test_loader.dataset)} datapoints")
-    pprint(f"Number of train samples: {len(train_loader)} batches/ {len(train_loader.dataset)} datapoints")
-    pprint(f"Number of val samples: {len(val_loader)} batches/ {len(val_loader.dataset)} datapoints")
-    pprint(f"Number of test samples: {len(test_loader)} batches/ {len(test_loader.dataset)} datapoints")
-    pprint(f"Data Transform: {data_transforms.keys()}\n")
-    
-    dataloaders = {
-        "train": train_loader,
-        "val": val_loader,
-        "test": test_loader,
-    }
-    return dataloaders
-
-def datasets_is_split(path):
-    folders_to_check = ['train', 'val', 'test']
-
-    for folder in folders_to_check:
-        folder_path = os.path.join(path, folder)
-        if not os.path.exists(folder_path) or not os.path.isdir(folder_path):
-            return False
-
-    return True
 
 if __name__ == "__main__":
     # data_dir = "D:/Casper/Data/Animals-10/raw-img"
@@ -190,5 +111,6 @@ if __name__ == "__main__":
     # pprint(dataloader)
 
     # Example usage:
-    print(format_number(12000))   # Output: 12K
-    print(format_number(365123456))  # Output: 365M
+    # print(format_number(12000))   # Output: 12K
+    # print(format_number(365123456))  # Output: 365M
+    pass
