@@ -20,10 +20,10 @@ def get_config():
 
         'pretrain' : True,
         'pretrain_category' : None,
-        'data_transform_name' : "sth",
+        'data_transform_name' : "basic_aug",
 
         'other_info' : "To build training functions",
-        'log_file_path': 'D:/Casper/Log/log_0108.txt',
+        'log_file_path': 'D:/Casper/Log/log_0109.txt',
     }
 
 

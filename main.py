@@ -12,7 +12,7 @@ def run_train_model():
     pprint('',show_time=True)
     
     model_things = get_config()
-    train_model(model_things)
+    model = train_model(model_things)
 
 if __name__ == "__main__":
     # run_video_app()

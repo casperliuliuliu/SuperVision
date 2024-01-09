@@ -7,7 +7,7 @@ class SimpleCNN(nn.Module):
         super(SimpleCNN, self).__init__()
         self.conv1 = nn.Conv2d(3, out_channels, kernel_size=3, padding=1)
         self.relu = nn.ReLU()
-        self.fc1 = nn.Linear(out_channels * resolution * resolution, 10)
+        self.fc1 = nn.Linear(out_channels * resolution * resolution, 1000)
 
     def forward(self, x):
         x = self.conv1(x)
