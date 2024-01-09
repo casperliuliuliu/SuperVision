@@ -27,7 +27,7 @@ def train_model(model_things):
         class_count = classes_list
     num_class = len(class_count)
     
-    model = get_model(model_things['model_name'], num_class)
+    model = get_model(model_things['model_name'], num_class, model_things['pretrain'])
     criterion = get_criterion(model_things['criterion_name'])
     optimizer = get_optimizer(model_things['optimizer_name'], model)
     lr_scheduler = get_lr_scheduler(model_things['lr_scheduler_name'], optimizer)

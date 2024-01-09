@@ -2,10 +2,10 @@ def get_config():
 
 
     config = {
-        'model_name' : 'sth',
-        'criterion_name' : "sth",
-        'optimizer_name' : "sth",
-        'lr_scheduler_name' : "sth",
+        'model_name' : 'resnet18',
+        'criterion_name' : "CrossEntropyLoss",
+        'optimizer_name' : "SGD",
+        'lr_scheduler_name' : "StepLR",
 
         'data_dir' : "D:/Casper/Data/Animals-10/raw-img",
         'train_ratio' : 0.6,

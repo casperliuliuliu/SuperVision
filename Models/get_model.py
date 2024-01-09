@@ -1,6 +1,6 @@
 import torch.nn as nn
 from torchvision import models
-from simple_CNN import SimpleCNN
+from Models.simple_CNN import SimpleCNN
 
 def modify_last_layer(model, new_output_size):
     layers = list(model.children())
@@ -18,13 +18,13 @@ def modify_last_layer(model, new_output_size):
 
 def get_model_structure(model_name, pretrain):
     if model_name == "resnet18":
-        model = models.resnet18(weight=pretrain)
+        model = models.resnet18(weights=pretrain)
     elif model_name == "SimpleCNN":
         model = SimpleCNN()
 
     return model
 
-def get_model(model_name, num_class_counts, pretrain):
+def get_model(model_name, num_class_counts, pretrain=None):
     model = get_model_structure(model_name, pretrain)
     model = modify_last_layer(model, num_class_counts)
 
@@ -35,5 +35,5 @@ def get_model(model_name, num_class_counts, pretrain):
 
 
 if __name__ == "__main__":
-    get_model('c',1000)
+    get_model('resnet18',100)
 

@@ -15,6 +15,7 @@ def get_data_transform(data_transform_name):
                     transforms.ToTensor(),
                 ]),
             }
+    
     if data_transform_name == "basic":
         pass
     elif data_transform_name == "basic_aug":
