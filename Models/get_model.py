@@ -1,14 +1,14 @@
 import torch.nn as nn
 from torchvision import models
 from Models.simple_CNN import SimpleCNN
-
+from Models.AlexNet import AlexNet
 def modify_last_layer(model, new_output_size):
     layers = list(model.children())
     for layer in reversed(layers):
         if hasattr(layer, 'out_features'):
             last_layer_input_features = layer.in_features
             break
-        print("[modifying last layer]: The layer modified was not last one, please check it.")
+        print("[!!!]: The layer modified was not last one, please check it.")
     
     for name, layer in reversed(list(model.named_children())):
         if hasattr(layer, 'out_features'):
@@ -21,12 +21,15 @@ def get_model_structure(model_name, pretrain):
         model = models.resnet18(weights=pretrain)
     elif model_name == "SimpleCNN":
         model = SimpleCNN()
+    elif model_name == "alexnet":
+        model = AlexNet()
 
     return model
 
 def get_model(model_name, num_class_counts, pretrain=None):
     model = get_model_structure(model_name, pretrain)
-    model = modify_last_layer(model, num_class_counts)
+    if model_name == "resnet18":
+        model = modify_last_layer(model, num_class_counts)
 
     return model
 ## what if i use my own pretrain weight? haven't solved

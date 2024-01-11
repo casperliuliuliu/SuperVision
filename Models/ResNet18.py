@@ -91,3 +91,6 @@ def resnet18(pretrained=False, **kwargs):
 if __name__ == "__main__":
     # Create the model
     model = resnet18()
+    img = torch.rand(size=(4, 3, 224,224)) *256
+    result = model(img)
+    print(model(img).shape)

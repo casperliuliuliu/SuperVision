@@ -19,6 +19,7 @@ def train_model(model_things):
     num_of_epoch = model_things['num_of_epoch']
     random_seed = model_things['random_seed']
     num_per_class = model_things['num_per_class']
+    show_confus = model_things['show_confus']
     data_transforms = get_data_transform(model_things['data_transform_name'])
     dataloaders = get_dataloaders(data_dir, data_transforms, train_ratio, val_ratio, batch_size, random_seed,  num_per_class, classes_list)
     if not classes_list:
@@ -61,7 +62,12 @@ def train_model(model_things):
                 inputs, labels = inputs.cuda(), labels.cuda()
                 with torch.set_grad_enabled(phase == 'train'): # forward # track history if only in train
                     outputs = model(inputs)
+
+                    # temporarly solutions
+                    if model_things['model_name'] == "alexnet":
+                        outputs = outputs.view(1, outputs.shape[0])
                     _, preds = torch.max(outputs, 1)
+
 
                     # This is for printing the probability of each preds
                     # probabilities = F.softmax(outputs, dim=1)
@@ -82,7 +88,8 @@ def train_model(model_things):
 
             epoch_loss = running_loss / dataset_sizes[phase]
             epoch_acc = running_corrects.double() / dataset_sizes[phase]
-            pprint(confus)
+            if show_confus:
+                pprint(confus)
             pprint('{} Loss: {:.4f} Accuracy: {:.4f}'.format(
                     phase, epoch_loss, epoch_acc))
 
