@@ -16,18 +16,18 @@ def modify_last_layer(model, new_output_size):
             break
     return model
 
-def get_model_structure(model_name, pretrain):
+def get_model_structure(model_name, num_class_counts, pretrain):
     if model_name == "resnet18":
         model = models.resnet18(weights=pretrain)
     elif model_name == "SimpleCNN":
         model = SimpleCNN()
     elif model_name == "alexnet":
-        model = AlexNet()
+        model = AlexNet(num_class_counts)
 
     return model
 
 def get_model(model_name, num_class_counts, pretrain=None):
-    model = get_model_structure(model_name, pretrain)
+    model = get_model_structure(model_name, num_class_counts, pretrain)
     if model_name == "resnet18":
         model = modify_last_layer(model, num_class_counts)
 

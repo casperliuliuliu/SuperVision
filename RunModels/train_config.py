@@ -2,7 +2,6 @@ def get_config():
 
 
     config = {
-        # 'model_name' : 'resnet18',
         'model_name' : 'alexnet',
         'criterion_name' : "CrossEntropyLoss",
         'optimizer_name' : "SGD",
@@ -12,9 +11,9 @@ def get_config():
         'train_ratio' : 0.6,
         'val_ratio' : 0.5,
         'random_seed' : 42,
-        'batch_size' : 1,
+        'batch_size' : 50,
         'learning_rate' : 0.01,
-        'num_of_epoch' : 20,
+        'num_of_epoch' : 5,
         'random_seed' : 645,
         'num_per_class' : 100,
         'classes_list' : [],
@@ -25,7 +24,7 @@ def get_config():
         'data_transform_name' : "basic_aug",
 
         'other_info' : "Train AlexNet.",
-        'log_file_path': 'D:/Casper/Log/log_0111.txt',
+        'log_file_path': 'D:/Casper/Log/log_0114.txt',
     }
 
 

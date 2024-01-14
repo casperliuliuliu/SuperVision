@@ -62,12 +62,7 @@ def train_model(model_things):
                 inputs, labels = inputs.cuda(), labels.cuda()
                 with torch.set_grad_enabled(phase == 'train'): # forward # track history if only in train
                     outputs = model(inputs)
-
-                    # temporarly solutions
-                    if model_things['model_name'] == "alexnet":
-                        outputs = outputs.view(1, outputs.shape[0])
                     _, preds = torch.max(outputs, 1)
-
 
                     # This is for printing the probability of each preds
                     # probabilities = F.softmax(outputs, dim=1)
