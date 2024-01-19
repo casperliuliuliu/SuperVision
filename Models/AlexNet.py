@@ -64,13 +64,14 @@ class AlexNet(nn.Module):
             nn.Linear(4096, 4096),
             nn.ReLU(inplace=True),
             nn.Dropout(dropout),
-            nn.Linear(4096, num_classes),
         )
+        self.fc = nn.Linear(4096, num_classes)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.extract_features(x)
         x = torch.flatten(x, 1)
         x = self.classifier(x)
+        x = self.fc(x) 
         return x
     
 if __name__ == "__main__":
